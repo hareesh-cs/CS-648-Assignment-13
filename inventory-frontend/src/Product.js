@@ -76,7 +76,7 @@ function Product() {
 
   return (
     <div>
-      <h1 className="text-center mb-4">Inventory Manager</h1>
+      <h1 className="text-center mb-4">Inventory Management</h1>
       <Filter filterText={filterText} onFilter={setFilterText} />
       {loading ? (
         <div className="text-center my-3">

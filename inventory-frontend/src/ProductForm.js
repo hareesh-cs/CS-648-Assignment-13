@@ -77,8 +77,8 @@ function ProductForm({ onSave }) {
             onChange={handleChange}
             className="form-select"
           >
-            <option value={true}>In Stock</option>
-            <option value={false}>Out of Stock</option>
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
           </select>
         </div>
       </div>

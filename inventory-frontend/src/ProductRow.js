@@ -8,9 +8,9 @@ function ProductRow({ product, onDelete, onUpdate }) {
       <td>${product.price}</td>
       <td>
         <span
-          className={`badge ${product.instock ? "bg-success" : "bg-warning"}`}
+          className={`badge ${product.instock ? "bg-success" : "bg-warning"} `}
         >
-          {product.instock ? "Yes" : "No"}
+          {product.instock ? "In Stock" : "Out of Stock"}
         </span>
       </td>
       <td>
