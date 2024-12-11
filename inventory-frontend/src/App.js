@@ -1,7 +1,6 @@
-import logo from "./logo.svg";
 import "./App.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Products from "./components/Product";
+import Products from "./Product";
 
 function App() {
   return (
