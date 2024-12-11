@@ -1,79 +1,97 @@
-import React, { useEffect, useState } from 'react';
-import Filter from './Filter';
-import ProductTable from './ProductTable';
-import ProductForm from './ProductForm';
+import React, { useEffect, useState } from "react";
+import Filter from "./Filter";
+import ProductTable from "./ProductTable";
+import ProductForm from "./ProductForm";
 
 function Product() {
   const [products, setProducts] = useState([]);
-  const [filterText, setFilterText] = useState('');
+  const [filterText, setFilterText] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Fetch products on component load
+  // Fetch products from the backend
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/product/get'); // Updated endpoint
+      const response = await fetch("http://localhost:5001/product/get");
       const data = await response.json();
       setProducts(data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSave = async (newProduct) => {
+    setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/product/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("http://localhost:5001/product/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newProduct),
       });
-      if (response.ok) {
-        fetchProducts(); // Refresh the product list
-      }
+      fetchProducts();
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error("Error saving product:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (productId) => {
-    try {
-      const response = await fetch(`http://localhost:5001/product/delete/${productId}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        fetchProducts(); // Refresh the product list
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      setLoading(true);
+      try {
+        await fetch(`http://localhost:5001/product/delete/${productId}`, {
+          method: "DELETE",
+        });
+        fetchProducts();
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error deleting product:', error);
     }
   };
 
   const handleUpdate = async (productId, updatedData) => {
+    setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5001/product/update/${productId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch(`http://localhost:5001/product/update/${productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
       });
-      if (response.ok) {
-        fetchProducts(); // Refresh the product list
-      }
+      fetchProducts();
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error("Error updating product:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      <Filter filterText={filterText} onFilter={(text) => setFilterText(text)} />
-      <ProductTable
-        products={products}
-        filterText={filterText}
-        onDelete={handleDelete}
-        onUpdate={handleUpdate}
-      />
+      <h1 className="text-center mb-4">Inventory Manager</h1>
+      <Filter filterText={filterText} onFilter={setFilterText} />
+      {loading ? (
+        <div className="text-center my-3">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : (
+        <ProductTable
+          products={products}
+          filterText={filterText}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+        />
+      )}
       <ProductForm onSave={handleSave} />
     </div>
   );
